@@ -1,3 +1,19 @@
+# identity files
+*.pem
+*.kp
+*.cred
+
+# Dist / data files
+*.zip
+*.tmp
+*.csv
+*.pdf
+*.dat
+
+# Editor tmp files
+*.swp
+*.*~
+
 *.py[cod]
 
 # C extensions
