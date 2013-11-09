@@ -13,11 +13,13 @@ unzip:
 	cp ./sanders-twitter/corpus.csv ./tweet-sentiment.csv
 
 scrape_tweets: tweet-sentiment.csv
-	python ./twitter_oauth_client.py -id ./id.cred -tweets ./tweet-sentiment.csv -col 3 -out-file twitter_info.dat
+	python ./twitter_oauth_client.py -id ./id.cred -tweets ./tweet-sentiment.csv -col 2 -out-file twitter_info.dat
 
 .PHONY clean:
 	rm -rf *.zip
 
 .PHONY strip-data:
 	rm -rf ./sanders-twitter*
+	rm -rf *.csv
+	rm -rf *.dat 
 

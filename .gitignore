@@ -9,6 +9,7 @@
 *.csv
 *.pdf
 *.dat
+*.tar.gz
 
 # Editor tmp files
 *.swp
