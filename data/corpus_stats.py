@@ -8,9 +8,11 @@ k refers to the number of toks per document
 """
 
 from numpy import *
-from collections import Counter
+from collections import Counter, defaultdict
+
 import pylab
 import json
+
 
 TWEET_DATA = "normalized_tweets.dat"
 
@@ -73,6 +75,15 @@ def load_tweets(fname):
         for line in fhandle:
             tweets.append(json.loads(line))
     return tweets
+
+
+
+def kfold(tweets, vectorizorer, classifierType):
+    # split data by label to preserve relative frequencies
+    m = map( lambda t: t['label'], tweets)    
+    result = reduce(lambda r, t: r[t['label']].append(t), m, defaultdict(list))
+
+
 
 if __name__ == "__main__":
     tweets = load_tweets(TWEET_DATA)
