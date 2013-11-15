@@ -1,0 +1,17 @@
+=================
+README
+=================
+
+This directory contains scripts for generating the data files for the project.
+
+The main data set that we are using is from sander's lab 
+(http://www.sananalytics.com/lab/twitter-sentiment/sanders-twitter-0.2.zip)
+This contains hand-curated twitter sentiment data. The lab some had people
+actually go through and decide whether each tweet was positive or negative
+toward the category under which it was grouped. To group the tweets, the lab
+used mentions of a few companies of interest (Twitter, Google, Apple, Microsoft)
+
+Because of Twitter's Dev API Terms of Service, tweet data cannot be stored in 
+a public repo. Derviative works may refer to the IDs of tweets so that other's
+may reconstruct the data set. See the Sander's Lab sentiment taggings for
+an example. 
