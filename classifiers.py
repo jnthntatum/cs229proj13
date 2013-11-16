@@ -5,7 +5,7 @@ Classifiers.py
 Classifiers for sentiment problem
 """
 
-import numpy;
+import numpy
 
 class Vectorizer(object):
     def __init__(self):
@@ -16,18 +16,23 @@ class Vectorizer(object):
 # initial model
 class UnigramVectorizer(Vectorizer):
     def __init__(self, token_map):
-        super(NBVectorizer, self).__init__()
+        super(Vectorizer, self).__init__()
         self.token_map = token_map
 
     def to_vector(self, tweet):
-        n = len(self.token_map.keys())
-        v = numpy.zeros([n, 1])
+        n = self.feature_size
+        v = numpy.zeros(n)
         for token in tweet['tokens']:
+            token = token.lower()
             if token in self.token_map:
                 v[self.token_map[token]] += 1.0
             else:
-                v["<OMIT>"] += 1.0
+                v[self.token_map["<OMIT>"]] += 1.0
         return v
+    
+    @property
+    def feature_size(self):
+        return len(self.token_map.keys()) 
 
 class BigramVectorizer(UnigramVectorizer):
     def __init__(self, token_map, bigram_map):
@@ -63,7 +68,7 @@ class NBClassifier(Classifier):
     """
     def __init__(self, n, labels):
         super(NBClassifier, self).__init__()
-        self.conditional_prob = None
+        self.theta = None
         self.class_priors = None
         self.n = n
         self.k = len(labels)
@@ -71,16 +76,27 @@ class NBClassifier(Classifier):
         self.idx_to_label = {i:l for i, l in enumerate(labels)}
 
     def train(self, training_set, labels):
-        #MLE
-        self.class_priors = numpy.zeros([self.k, 1])
-        self.conditional_priors = numpy.zeros([self.k, self.n])
+        # MLE
+        class_priors = numpy.zeros([self.k, 1])
+        theta = numpy.zeros([self.k, self.n])
+        num_examples = labels.shape[0]
+        for label in self.label_to_idx:
+            lbl_idx = self.label_to_idx[label]
+            indices = numpy.where(labels == label)[0]
+            class_examples = training_set[indices,:]
+            theta[lbl_idx,:] = class_examples.sum(0) + 1 # sum over rows
+            theta[lbl_idx,:] *= 1.0 / theta[lbl_idx,:].sum()
+            class_priors[lbl_idx] = len(indices) / float(num_examples)
         #Convert parameters to logspace
-        pass
+        self.class_priors = numpy.log(class_priors)
+        self.theta = numpy.log(theta).T
     
     def classify(self, example):
         if self.class_priors is None:
             raise ClassifierException("ERROR: model not trained")
-        
+        lls = example.reshape([1, self.n]).dot(self.theta)
+        lls += self.class_priors.T
+        return self.idx_to_label[numpy.argmax(lls)]
 
 
 # SVM HERE!!!

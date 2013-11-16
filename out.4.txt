@@ -1,0 +1,405 @@
+<><><><><><><><><><><>
+======================
+0 (13287 features) -- 363.044
+======= label=0 ========
+tp: 3913274; tn: 162734; fp: 1055172; fn: 604848
+accuracy:	0.659
+specificity:	0.134
+sensitivity:	0.866
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 15365; tn: 5018525; fp: 137889; fn: 564249
+accuracy:	0.948
+specificity:	0.973
+sensitivity:	0.027
+negative predictive value:	0.899
+positive predictive value:	0.100
+
+======= label=-1 ========
+tp: 68410; tn: 4551818; fp: 545918; fn: 569882
+accuracy:	0.809
+specificity:	0.893
+sensitivity:	0.107
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+1 (4562 features) -- 457.477
+======= label=0 ========
+tp: 3390293; tn: 303127; fp: 914723; fn: 1127885
+accuracy:	0.669
+specificity:	0.249
+sensitivity:	0.750
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 44206; tn: 4759988; fp: 396466; fn: 535368
+accuracy:	0.858
+specificity:	0.923
+sensitivity:	0.076
+negative predictive value:	0.899
+positive predictive value:	0.100
+
+======= label=-1 ========
+tp: 110215; tn: 4217627; fp: 880125; fn: 528061
+accuracy:	0.711
+specificity:	0.827
+sensitivity:	0.173
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+2 (2687 features) -- 483.165
+======= label=0 ========
+tp: 3247794; tn: 342628; fp: 875208; fn: 1270398
+accuracy:	0.672
+specificity:	0.281
+sensitivity:	0.719
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 53980; tn: 4676352; fp: 480100; fn: 525596
+accuracy:	0.831
+specificity:	0.907
+sensitivity:	0.093
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 119894; tn: 4138716; fp: 959052; fn: 518366
+accuracy:	0.689
+specificity:	0.812
+sensitivity:	0.188
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+3 (2009 features) -- 494.889
+======= label=0 ========
+tp: 3182268; tn: 360970; fp: 856898; fn: 1335892
+accuracy:	0.674
+specificity:	0.296
+sensitivity:	0.704
+negative predictive value:	0.213
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 58714; tn: 4635544; fp: 520888; fn: 520882
+accuracy:	0.818
+specificity:	0.899
+sensitivity:	0.101
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 124526; tn: 4105022; fp: 992734; fn: 513746
+accuracy:	0.681
+specificity:	0.805
+sensitivity:	0.195
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+4 (1625 features) -- 498.583
+======= label=0 ========
+tp: 3163091; tn: 364545; fp: 853311; fn: 1355081
+accuracy:	0.674
+specificity:	0.299
+sensitivity:	0.700
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 61387; tn: 4605903; fp: 550543; fn: 518195
+accuracy:	0.809
+specificity:	0.893
+sensitivity:	0.106
+negative predictive value:	0.899
+positive predictive value:	0.100
+
+======= label=-1 ========
+tp: 123339; tn: 4113397; fp: 984357; fn: 514935
+accuracy:	0.683
+specificity:	0.807
+sensitivity:	0.193
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+5 (1365 features) -- 500.435
+======= label=0 ========
+tp: 3152376; tn: 368220; fp: 849672; fn: 1365760
+accuracy:	0.674
+specificity:	0.302
+sensitivity:	0.698
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 63622; tn: 4590160; fp: 566262; fn: 515984
+accuracy:	0.804
+specificity:	0.890
+sensitivity:	0.110
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 122947; tn: 4116593; fp: 981149; fn: 515339
+accuracy:	0.684
+specificity:	0.808
+sensitivity:	0.193
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+6 (1194 features) -- 503.686
+======= label=0 ========
+tp: 3134323; tn: 372831; fp: 845025; fn: 1383849
+accuracy:	0.675
+specificity:	0.306
+sensitivity:	0.694
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 63997; tn: 4588209; fp: 568239; fn: 515583
+accuracy:	0.804
+specificity:	0.890
+sensitivity:	0.110
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 125052; tn: 4098360; fp: 999392; fn: 513224
+accuracy:	0.679
+specificity:	0.804
+sensitivity:	0.196
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+7 (1058 features) -- 501.911
+======= label=0 ========
+tp: 3144095; tn: 370723; fp: 847163; fn: 1374047
+accuracy:	0.675
+specificity:	0.304
+sensitivity:	0.696
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 65439; tn: 4576377; fp: 580041; fn: 514171
+accuracy:	0.800
+specificity:	0.888
+sensitivity:	0.113
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 122338; tn: 4120800; fp: 976952; fn: 515938
+accuracy:	0.685
+specificity:	0.808
+sensitivity:	0.192
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+8 (941 features) -- 508.083
+======= label=0 ========
+tp: 3108980; tn: 381014; fp: 836812; fn: 1409222
+accuracy:	0.676
+specificity:	0.313
+sensitivity:	0.688
+negative predictive value:	0.213
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 67204; tn: 4560276; fp: 596196; fn: 512352
+accuracy:	0.795
+specificity:	0.884
+sensitivity:	0.116
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 126126; tn: 4097048; fp: 1000710; fn: 512144
+accuracy:	0.678
+specificity:	0.804
+sensitivity:	0.198
+negative predictive value:	0.889
+positive predictive value:	0.112
+
+<><><><><><><><><><><>
+======================
+9 (856 features) -- 506.186
+======= label=0 ========
+tp: 3120489; tn: 376989; fp: 840827; fn: 1397723
+accuracy:	0.675
+specificity:	0.310
+sensitivity:	0.691
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 65709; tn: 4571933; fp: 584529; fn: 513857
+accuracy:	0.799
+specificity:	0.887
+sensitivity:	0.113
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 125199; tn: 4098503; fp: 999275; fn: 513051
+accuracy:	0.679
+specificity:	0.804
+sensitivity:	0.196
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+10 (775 features) -- 504.240
+======= label=0 ========
+tp: 3130842; tn: 375368; fp: 842458; fn: 1387360
+accuracy:	0.675
+specificity:	0.308
+sensitivity:	0.693
+negative predictive value:	0.213
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 65535; tn: 4574145; fp: 582321; fn: 514027
+accuracy:	0.799
+specificity:	0.887
+sensitivity:	0.113
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 124341; tn: 4107233; fp: 990531; fn: 513923
+accuracy:	0.681
+specificity:	0.806
+sensitivity:	0.195
+negative predictive value:	0.889
+positive predictive value:	0.112
+
+<><><><><><><><><><><>
+======================
+11 (720 features) -- 502.471
+======= label=0 ========
+tp: 3140517; tn: 372987; fp: 844841; fn: 1377683
+accuracy:	0.675
+specificity:	0.306
+sensitivity:	0.695
+negative predictive value:	0.213
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 63236; tn: 4595842; fp: 560604; fn: 516346
+accuracy:	0.806
+specificity:	0.891
+sensitivity:	0.109
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 125439; tn: 4096391; fp: 1001391; fn: 512807
+accuracy:	0.678
+specificity:	0.804
+sensitivity:	0.197
+negative predictive value:	0.889
+positive predictive value:	0.111
+
+<><><><><><><><><><><>
+======================
+12 (669 features) -- 505.576
+======= label=0 ========
+tp: 3123337; tn: 376269; fp: 841593; fn: 1394829
+accuracy:	0.675
+specificity:	0.309
+sensitivity:	0.691
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 64435; tn: 4583781; fp: 572655; fn: 515157
+accuracy:	0.802
+specificity:	0.889
+sensitivity:	0.111
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 126547; tn: 4090297; fp: 1007461; fn: 511723
+accuracy:	0.677
+specificity:	0.802
+sensitivity:	0.198
+negative predictive value:	0.889
+positive predictive value:	0.112
+
+<><><><><><><><><><><>
+======================
+13 (629 features) -- 502.454
+======= label=0 ========
+tp: 3140311; tn: 371649; fp: 846183; fn: 1377885
+accuracy:	0.675
+specificity:	0.305
+sensitivity:	0.695
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 65326; tn: 4579974; fp: 576496; fn: 514232
+accuracy:	0.801
+specificity:	0.888
+sensitivity:	0.113
+negative predictive value:	0.899
+positive predictive value:	0.102
+
+======= label=-1 ========
+tp: 123636; tn: 4113678; fp: 984076; fn: 514638
+accuracy:	0.683
+specificity:	0.807
+sensitivity:	0.194
+negative predictive value:	0.889
+positive predictive value:	0.112
+
+<><><><><><><><><><><>
+======================
+14 (583 features) -- 501.058
+======= label=0 ========
+tp: 3149434; tn: 368828; fp: 849030; fn: 1368736
+accuracy:	0.674
+specificity:	0.303
+sensitivity:	0.697
+negative predictive value:	0.212
+positive predictive value:	0.788
+
+======= label=1 ========
+tp: 63071; tn: 4594399; fp: 562025; fn: 516533
+accuracy:	0.806
+specificity:	0.891
+sensitivity:	0.109
+negative predictive value:	0.899
+positive predictive value:	0.101
+
+======= label=-1 ========
+tp: 123456; tn: 4108762; fp: 989012; fn: 514798
+accuracy:	0.681
+specificity:	0.806
+sensitivity:	0.193
+negative predictive value:	0.889
+positive predictive value:	0.111
+

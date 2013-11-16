@@ -85,7 +85,7 @@ def normalize_tweets(tweet_list, sentiment):
             if token == "@": 
                 i += 1
             elif token != "#":
-                stems.append(stemmer.stem_word(token))
+                stems.append(stemmer.stem_word(token).lower())
             i += 1
         short_tweet['tokens'] = stems
         result.append(short_tweet)
