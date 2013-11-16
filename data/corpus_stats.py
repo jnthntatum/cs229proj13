@@ -9,7 +9,7 @@ k refers to the number of toks per document
 
 from numpy import *
 from collections import Counter, defaultdict
-
+from random import shuffle
 import pylab
 import json
 
@@ -77,12 +77,23 @@ def load_tweets(fname):
     return tweets
 
 
+def split(full_set, k, i):
+    pass
 
-def kfold(tweets, vectorizorer, classifierType):
+def kfold_validation(k=3, tweets, vectorizer, classifierType):
     # split data by label to preserve relative frequencies
-    m = map( lambda t: t['label'], tweets)    
-    result = reduce(lambda r, t: r[t['label']].append(t), m, defaultdict(list))
+    v = vectorizer()
+    c = classifierType()
+    m = map( lambda t: (t['label'], v.to_vector(t)), tweets)    
+    shuffle(m) # don't really need to recover order
+    data = reduce(lambda r, t: r[t[0]].append(t[1]), m, defaultdict(list))
+    
+    tp = Counter()
+    fp = Counter()
 
+    for i in xrange(k):
+        train, validation = split(data)
+        c.train(train)
 
 
 if __name__ == "__main__":
