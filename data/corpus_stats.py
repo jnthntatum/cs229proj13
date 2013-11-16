@@ -12,7 +12,7 @@ from collections import Counter, defaultdict
 from random import shuffle
 import pylab
 import json
-
+import math
 
 TWEET_DATA = "normalized_tweets.dat"
 
@@ -78,23 +78,53 @@ def load_tweets(fname):
 
 
 def split(full_set, k, i):
-    pass
+    """
+    return a split of the data so we have one fold of 
+    validation and the rest as training.
 
-def kfold_validation(k=3, tweets, vectorizer, classifierType):
+    return: training_set, validation_set
+    """
+    m = full_set.shape[0]
+    fold_sz = math.ceil(m / float(k))
+    validation_idxs = range(i*fold_sz, math.max((i+1)*fold_sz, m))
+    training_idxs = range(0, i*fold_sz) + range((i+1)*fold_sz, m)  
+    return full_set[training_idxs,:], full_set[validation_idxs, :]
+
+def unpack_labels(examples):
+    """
+    separate examples from labels
+    returns y, a column vector of labels and X, the design matrix
+
+    return: y, X
+    """
+    l = examples[:,0]
+    e = examples[:,1:]
+    return l, e
+
+
+def kfold_validation(tweets, vectorizer, classifier, k=3):
     # split data by label to preserve relative frequencies
-    v = vectorizer()
-    c = classifierType()
-    m = map( lambda t: (t['label'], v.to_vector(t)), tweets)    
-    shuffle(m) # don't really need to recover order
-    data = reduce(lambda r, t: r[t[0]].append(t[1]), m, defaultdict(list))
-    
+    data = map( lambda t: (t['label'], vectorizer.to_vector(t)), tweets)    
+    data = array(shuffle(data)) # don't really need to recover order
+
+    """ 
+    todo: ROC curve calculation
     tp = Counter()
     fp = Counter()
-
+    fn = Counter()
+    tn = Counter()
+    """
+    
     for i in xrange(k):
-        train, validation = split(data)
-        c.train(train)
-
+        train, validation = split(data, k, i)
+        tl, te = unpack_labels(train)
+        vl, ve = unpack_labels(validation)
+        classifier.train(te, tl)
+        predictions = classifier.classify_many(ve)
+        errs = (vl != predictions).sum()
+    
+    m = data.shape[0]
+    return errs / float(m)
 
 if __name__ == "__main__":
     tweets = load_tweets(TWEET_DATA)
