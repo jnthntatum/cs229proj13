@@ -131,7 +131,6 @@ def kfold_validation(tweets, vectorizer, classifier, k=3):
         vl, ve = unpack_labels(validation)
         classifier.train(te, tl)
         predictions = classifier.classify_many(ve)
-        
         for i in [-1, 0, 1]:
             tp[i] += ((vl == i) * (predictions == i)).sum()
             tn[i] += ((vl != i) * (predictions != i)).sum()
@@ -153,21 +152,33 @@ def generate_dictionary(tf, min_threshold):
     result[OMIT] = index
     return result
 
-def print_stats(tp, fp, fn, tn):
-    for i in tp:
-        print "======= label=%d ========" % i
-        print "tp: %d; tn: %d; fp: %d; fn: %d" % (tp[i], tn[i], fp[i], fn[i])
-        print "accuracy:\t%0.3f" % ((tn[i] + tp[i]) / float(fp[i] + tn[i] + tp[i]+ fp[i]))
-        print "specificity:\t%0.3f" % (tn[i]/ float(fp[i] + tn[i]))
-        print "sensitivity:\t%0.3f" % (tp[i]/ float(tp[i] + fn[i]))
-        print "negative predictive value:\t%0.3f" % (tn[i]/ float(fn[i] + tn[i]))
-        print "positive predictive value:\t%0.3f" % (tp[i]/ float(fp[i] + tp[i]))
-        print ""
+def stats_i(tp, fp, fn, tn, i):
+    print "======= label=%d ========" % i
+    print "tp: %d; tn: %d; fp: %d; fn: %d" % (tp[i], tn[i], fp[i], fn[i])
+    acc = ((tn[i] + tp[i]) / float(fp[i] + tn[i] + tp[i]+ fp[i]))
+    npp = (tn[i]/ float(fn[i] + tn[i]))
+    spec = (tn[i]/ float(fp[i] + tn[i]))
+    ppp = (tp[i]/ float(fp[i] + tp[i]))
+    sens = (tp[i]/ float(tp[i] + fn[i]))
+    print "accuracy:\t%0.3f" % acc
+    print "negative predictive value:\t%0.3f" % npp
+    print "positive predictive value:\t%0.3f" % ppp
+    print "sensitivity:\t%0.3f" % sens
+    print "specificity:\t%0.3f" % spec
+    print ""
+    return acc, sens, spec, ppp, npp
+
+def print_stats(tp, fp, fn, tn):    
+    re = {}
+    for i in tp:   
+        re[i] = stats_i(tp, fp, fn, tn, i)
+    return re
+        
 
 if __name__ == "__main__":
     tweets = load_tweets(TWEET_DATA)
     ld, m, tf, tdf = cumulative_stats(tweets)
-    models_learned = []
+    results = []
     for i in xrange(15):
         params = generate_dictionary(tdf, i)
         v = UnigramVectorizer(params)
@@ -176,4 +187,12 @@ if __name__ == "__main__":
         print "<><><><><><><><><><><>"
         print "======================"
         print "%d (%d features) -- %0.3f" % (i, v.feature_size, acc)
-        print_stats(tp, fp, fn, tn)
+        results.append(print_stats(tp, fp, fn, tn))
+    # plotable form
+    chart = [] 
+    for l in [-1, 0, 1]:
+        for i, r in enumerate(results): 
+            r = r[l]
+            print "%d, %d, %f, %f, %f, %f, %f" % (i, l, r[0], r[1], r[2], r[3], r[4])
+            chart.append( [i, l, r[0], r[1], r[2], r[3], r[4]] )
+    chart = numpy.array(chart)

@@ -54,7 +54,7 @@ class Classifier(object):
         raise ValueError("Abstract Class")
         pass
     def classify_many(self, examples):
-        result = numpy.zeros([len(examples), 1])
+        result = numpy.zeros(len(examples))
         for i, example in enumerate(examples):
             result[i] = self.classify(example)
         return result
