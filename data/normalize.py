@@ -16,7 +16,7 @@ SENTIMENTS = {
     "positive": 1,
     "negative": -1,
     "neutral" : 0,
-    "irrelevant": 0 
+    "irrelevant": 2 
 }
 
 def load_labels(fname):

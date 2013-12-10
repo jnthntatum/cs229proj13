@@ -15,8 +15,8 @@ import json
 import math
 from classifiers import *
 
-TWEET_DATA = "data/normalized_tweets.dat"
-
+TWEET_DATA = "data/normalized_tweets_4_class.dat"
+LABELS = {1: "positive", 0: "neutral", -1:"negative", 2:"irrelevant"}
 
 """
 def hist_counter(fname, counters):
@@ -31,6 +31,11 @@ frequent or under frequent
 """
 
 OMIT = "<OMIT>"
+
+""" 
+token for breaks in documents (ie start and end)
+"""
+NULL = "<NULL>"
 
 def sort_and_zip(counter):
     a = sorted(counter.keys())
@@ -48,15 +53,12 @@ def hist_counter(counter):
         hist[counter[key]] += 1
     return hist
 
-
 def cumulative_stats(tweets):
     """
     makes a pass over all documents counting general statistics
     and producing a list of unique tokens
     """  
     length_dist = Counter()
-    tok_freq = Counter()
-    tok_doc_freq = Counter()  
     m = 0
 
     for tweet in tweets:
@@ -64,11 +66,67 @@ def cumulative_stats(tweets):
         k = len(toks)
         length_dist[k] += 1
         m += k
-        for tok in toks:
-            tok_freq[tok.lower()] += 1
-        for tok in set(toks):
-            tok_doc_freq[tok.lower()] += 1
+
+    tok_freq, tok_doc_freq = count_tokens(tweets)
     return length_dist, m, tok_freq, tok_doc_freq
+
+def ctr_filter(func, ctr):
+    return {key: ctr[key] for key in filter(func, ctr)}
+
+def ctr_thresh_filter(ctr, thresh):
+    return ctr_filter(lambda k: ctr[k]>= thresh, ctr)
+
+def count_tokens(tweets): 
+    tok_freq = Counter()
+    tok_doc_freq = Counter()   
+    for tweet in tweets:
+        toks = tweet['tokens']
+        tok_freq[NULL] += 2
+        tok_doc_freq[NULL] += 1
+        for tok in toks:
+            tok_freq[tok] += 1
+        for tok in set(toks):
+            tok_doc_freq[tok] += 1
+    return tok_freq, tok_doc_freq
+
+def count_kmers(tweets, k=3, thresh=3):
+    """
+    simple implementation of CKY algorithm
+    """
+    if k <=2:
+        rec_corp_kmers, rec_doc_kmers = count_tokens(tweets)
+        rec_corp_kmers = ctr_thresh_filter(rec_corp_kmers, thresh)
+        rec_doc_kmers = ctr_thresh_filter(rec_doc_kmers, thresh)
+        rec_corp_kmers = {tuple(key):rec_corp_kmers[key] for key in rec_corp_kmers}
+        rec_doc_kmers = {tuple(key):rec_doc_kmers[key] for key in rec_doc_kmers}
+    else:
+        rec_corp_kmers, rec_doc_kmers =  count_kmers(tweets, k-1, thresh) 
+    
+    print "CKY Pass %d" % k
+    corp_kmers = Counter() 
+    doc_kmers = Counter()
+
+    for tweet in tweets:
+        toks = tweet['tokens']
+        padded = [NULL for i in xrange(k-1)] + toks + [NULL for i in xrange(k-1)]
+        added = set()
+        for i in xrange(k-2, len(toks)+k-1):
+            left_r_kmer =   tuple(padded[i : i + k - 1])
+            right_r_kmer =  tuple(padded[i + 1 : i + k])
+            kmer = tuple(padded[i: i + k])
+            print kmer
+            print "l - %s " % left_r_kmer
+            print "r - %s"  % right_r_kmer
+            if  ( left_r_kmer in rec_corp_kmers
+                    and right_r_kmer in rec_corp_kmers):
+                corp_kmers[kmer] += 1
+            if  (left_r_kmer in rec_doc_kmers 
+                   and right_r_kmer in rec_doc_kmers):
+                if kmer not in added:
+                    added.add(kmer)
+                    doc_kmers[kmer] += 1
+    
+    return ctr_thresh_filter(corp_kmers, thresh), ctr_thresh_filter(doc_kmers, thresh)
 
 def load_tweets(fname):
     tweets = []
@@ -112,7 +170,6 @@ def pack_labels(tuples):
     return M 
 
 def kfold_validation(tweets, vectorizer, classifier, k=3):
-    # split data by label to preserve relative frequencies
     data = map( lambda t: (t['label'], vectorizer.to_vector(t)), tweets)    
     shuffle(data)
     data = pack_labels(data)
@@ -131,7 +188,7 @@ def kfold_validation(tweets, vectorizer, classifier, k=3):
         vl, ve = unpack_labels(validation)
         classifier.train(te, tl)
         predictions = classifier.classify_many(ve)
-        for i in [-1, 0, 1]:
+        for i in LABELS:
             tp[i] += ((vl == i) * (predictions == i)).sum()
             tn[i] += ((vl != i) * (predictions != i)).sum()
             fp_i = ((vl != i) * (predictions == i)).sum()
@@ -179,10 +236,11 @@ if __name__ == "__main__":
     tweets = load_tweets(TWEET_DATA)
     ld, m, tf, tdf = cumulative_stats(tweets)
     results = []
-    for i in xrange(15):
+    print "finished with corp stats"
+    """for i in xrange(0):
         params = generate_dictionary(tdf, i)
         v = UnigramVectorizer(params)
-        c = NBClassifier(v.feature_size, [-1, 0, 1])  
+        c = NBClassifier(v.feature_size, LABELS, False)  
         acc, tp, fp, fn, tn = kfold_validation(tweets, v, c, 4)
         print "<><><><><><><><><><><>"
         print "======================"
@@ -190,9 +248,10 @@ if __name__ == "__main__":
         results.append(print_stats(tp, fp, fn, tn))
     # plotable form
     chart = [] 
-    for l in [-1, 0, 1]:
+    for l in LABELS:
         for i, r in enumerate(results): 
             r = r[l]
             print "%d, %d, %f, %f, %f, %f, %f" % (i, l, r[0], r[1], r[2], r[3], r[4])
             chart.append( [i, l, r[0], r[1], r[2], r[3], r[4]] )
     chart = numpy.array(chart)
+    """
