@@ -91,19 +91,21 @@ def count_tokens(tweets):
 
 def count_kmers(tweets, k=3, thresh=3):
     """
-    simple implementation of CKY algorithm
+    loosely based on Apriori algorithm
+    idea: a k-gram can't possibly be more frequent than its constituent k-1 grams
     """
     if k <=2:
         rec_corp_kmers, rec_doc_kmers = count_tokens(tweets)
         rec_corp_kmers = ctr_thresh_filter(rec_corp_kmers, thresh)
         rec_doc_kmers = ctr_thresh_filter(rec_doc_kmers, thresh)
-        rec_corp_kmers = {tuple(key):rec_corp_kmers[key] for key in rec_corp_kmers}
-        rec_doc_kmers = {tuple(key):rec_doc_kmers[key] for key in rec_doc_kmers}
+        rec_corp_kmers = {tuple([key]):rec_corp_kmers[key] for key in rec_corp_kmers}
+        rec_doc_kmers = {tuple([key]):rec_doc_kmers[key] for key in rec_doc_kmers}
+
     else:
         rec_corp_kmers, rec_doc_kmers =  count_kmers(tweets, k-1, thresh) 
     
-    print "CKY Pass %d" % k
-    corp_kmers = Counter() 
+    print "Apriori Pass %d" % k
+    corp_kmers = Counter()
     doc_kmers = Counter()
 
     for tweet in tweets:
@@ -114,9 +116,6 @@ def count_kmers(tweets, k=3, thresh=3):
             left_r_kmer =   tuple(padded[i : i + k - 1])
             right_r_kmer =  tuple(padded[i + 1 : i + k])
             kmer = tuple(padded[i: i + k])
-            print kmer
-            print "l - %s " % left_r_kmer
-            print "r - %s"  % right_r_kmer
             if  ( left_r_kmer in rec_corp_kmers
                     and right_r_kmer in rec_corp_kmers):
                 corp_kmers[kmer] += 1
@@ -149,7 +148,7 @@ def split(full_set, k, i):
     training_idxs = range(0, i*fold_sz) + range((i+1)*fold_sz, m)  
     return full_set[training_idxs,:], full_set[validation_idxs, :]
 
-def unpack_labels(examples):
+def unpack_labels( examples ):
     """
     separate examples from labels
     returns y, a column vector of labels and X, the design matrix
@@ -202,56 +201,59 @@ def kfold_validation(tweets, vectorizer, classifier, k=3):
 def generate_dictionary(tf, min_threshold):
     result = {}
     index = 0
-    for token in tf:
-        if tf[token] > min_threshold:
-            result[token] = index
+    for key in tf:
+        if tf[key] >= min_threshold:
+            result[key] = index
             index += 1
     result[OMIT] = index
     return result
 
-def stats_i(tp, fp, fn, tn, i):
-    print "======= label=%d ========" % i
-    print "tp: %d; tn: %d; fp: %d; fn: %d" % (tp[i], tn[i], fp[i], fn[i])
+def stats_i(tp, fp, fn, tn, i, verbose = True):
     acc = ((tn[i] + tp[i]) / float(fp[i] + tn[i] + tp[i]+ fp[i]))
     npp = (tn[i]/ float(fn[i] + tn[i]))
     spec = (tn[i]/ float(fp[i] + tn[i]))
     ppp = (tp[i]/ float(fp[i] + tp[i]))
     sens = (tp[i]/ float(tp[i] + fn[i]))
-    print "accuracy:\t%0.3f" % acc
-    print "negative predictive value:\t%0.3f" % npp
-    print "positive predictive value:\t%0.3f" % ppp
-    print "sensitivity:\t%0.3f" % sens
-    print "specificity:\t%0.3f" % spec
-    print ""
+    if verbose:
+        print "======= label=%d ========" % i
+        print "tp: %d; tn: %d; fp: %d; fn: %d" % (tp[i], tn[i], fp[i], fn[i])
+        print "accuracy:\t%0.3f" % acc
+        print "negative predictive value:\t%0.3f" % npp
+        print "positive predictive value:\t%0.3f" % ppp
+        print "sensitivity:\t%0.3f" % sens
+        print "specificity:\t%0.3f" % spec
+        print ""
     return acc, sens, spec, ppp, npp
 
-def print_stats(tp, fp, fn, tn):    
+def print_stats(tp, fp, fn, tn, verbose = True):    
     re = {}
     for i in tp:   
-        re[i] = stats_i(tp, fp, fn, tn, i)
+        re[i] = stats_i(tp, fp, fn, tn, i, verbose)
     return re
         
 
 if __name__ == "__main__":
     tweets = load_tweets(TWEET_DATA)
-    ld, m, tf, tdf = cumulative_stats(tweets)
-    results = []
+    results = {}
     print "finished with corp stats"
-    """for i in xrange(0):
-        params = generate_dictionary(tdf, i)
-        v = UnigramVectorizer(params)
+    tf, tdf = count_tokens(tweets)
+    # for j in xrange(2,5):
+    #kgram_freq, kgram_doc_freq = count_kmers(tweets,j)
+    j = 1
+    for i in xrange(3, 12):
+        token_map = generate_dictionary(tf, i)
+        #kgram_map = generate_dictionary(kgram_freq, i)
+        v = UnigramVectorizer(token_map)
         c = NBClassifier(v.feature_size, LABELS, False)  
         acc, tp, fp, fn, tn = kfold_validation(tweets, v, c, 4)
-        print "<><><><><><><><><><><>"
-        print "======================"
-        print "%d (%d features) -- %0.3f" % (i, v.feature_size, acc)
-        results.append(print_stats(tp, fp, fn, tn))
+        results[(j, i)] = print_stats(tp, fp, fn, tn)
+
     # plotable form
-    chart = [] 
+    chart = []
+    print "Label, k, thresh, acc, sens, spec, ppp, npp" 
     for l in LABELS:
-        for i, r in enumerate(results): 
-            r = r[l]
-            print "%d, %d, %f, %f, %f, %f, %f" % (i, l, r[0], r[1], r[2], r[3], r[4])
-            chart.append( [i, l, r[0], r[1], r[2], r[3], r[4]] )
+        for j, i in results: 
+            r = results[(j,i)][l]
+            print "%d, %d, %d, %f, %f, %f, %f, %f" % (l, j, i, r[0], r[1], r[2], r[3], r[4])
+            chart.append( [l, j, i, r[0], r[1], r[2], r[3], r[4]] )
     chart = numpy.array(chart)
-    """

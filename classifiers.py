@@ -16,7 +16,7 @@ class Vectorizer(object):
 # initial model
 class UnigramVectorizer(Vectorizer):
     def __init__(self, token_map):
-        super(Vectorizer, self).__init__()
+        super(UnigramVectorizer, self).__init__()
         self.token_map = token_map
 
     def to_vector(self, tweet):
@@ -35,17 +35,18 @@ class UnigramVectorizer(Vectorizer):
 
 class KGramVectorizer(UnigramVectorizer):
     def __init__(self, token_map, kgram_map, k):
-        super(UnigramVectorizer, self).__init__(token_map)
-        self.kgram_map = None
+        super(KGramVectorizer, self).__init__(token_map)
+        self.kgram_map = kgram_map
         self.k = k
     
     def to_vector(self, tweet):
         toks = tweet['tokens']
+        k = self.k
         padlen = k-1
         padded = ["<NULL>" for i in xrange(padlen)] + toks + ["<NULL>" for i in xrange(padlen)]
-        v = numpy.zeros(self.feature_size)
-        for i in xrange(padlen, len(padded) - padlen):
-            kgid = tuple(toks[i:i+padlen])
+        v = numpy.zeros(self.feature_size) 
+        for i in xrange(padlen-1, len(toks) + padlen) :
+            kgid = tuple(toks[i:i+k])
             if kgid in self.kgram_map:
                 idx = self.kgram_map[kgid]  
             else: 
@@ -56,15 +57,6 @@ class KGramVectorizer(UnigramVectorizer):
     @property
     def feature_size(self):
         return len(self.kgram_map)
-   
-    
-
-class BigramVectorizer(UnigramVectorizer):
-    def __init__(self, token_map, bigram_map):
-        super(BigramVectorizer, self).__init__(token_map)
-        
-    def to_vector(self, tweet):
-        n = self.feature_size
 
 class Classifier(object):
     class ClassifierException(ValueError):
