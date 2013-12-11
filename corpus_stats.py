@@ -76,6 +76,9 @@ def ctr_filter(func, ctr):
 def ctr_thresh_filter(ctr, thresh):
     return ctr_filter(lambda k: ctr[k]>= thresh, ctr)
 
+def ctr_cap_filter(ctr, thresh):
+    return ctr_filter(lambda k: ctr[k] <= thresh, ctr)
+
 def count_tokens(tweets): 
     tok_freq = Counter()
     tok_doc_freq = Counter()   
@@ -168,11 +171,15 @@ def pack_labels(tuples):
         M[i,0]  = t[0]
     return M 
 
-def kfold_validation(tweets, vectorizer, classifier, k=3):
+
+def to_dataset(tweets, vectorizer):
     data = map( lambda t: (t['label'], vectorizer.to_vector(t)), tweets)    
     shuffle(data)
     data = pack_labels(data)
-    
+    return data
+
+
+def kfold_validation(dataset, classifier, k=3):
     # todo: ROC curve calculation
     tp = Counter()
     fp = Counter()
@@ -182,7 +189,7 @@ def kfold_validation(tweets, vectorizer, classifier, k=3):
     errs = 0
 
     for i in xrange(k):
-        train, validation = split(data, k, i)
+        train, validation = split(dataset, k, i)
         tl, te = unpack_labels(train)
         vl, ve = unpack_labels(validation)
         classifier.train(te, tl)
@@ -195,17 +202,15 @@ def kfold_validation(tweets, vectorizer, classifier, k=3):
             fn_i = ((vl == i) * (predictions != i)).sum()
             fn[i] += fn_i
             errs += fn_i    
-    m = data.shape[0]
+    m = dataset.shape[0]
     return float(errs) / m, tp, fp, fn, tn
 
 def generate_dictionary(tf, min_threshold):
     result = {}
     index = 0
-    for key in tf:
-        if tf[key] >= min_threshold:
-            result[key] = index
-            index += 1
-    result[OMIT] = index
+    for i, k in enumerate(ctr_thresh_filter(tf, min_threshold)):
+        result[k] = i 
+    result[OMIT] = i + 1
     return result
 
 def stats_i(tp, fp, fn, tn, i, verbose = True):
@@ -232,20 +237,22 @@ def print_stats(tp, fp, fn, tn, verbose = True):
     return re
         
 
+def select_by_col(arr, col, val):
+    return arr[numpy.nonzero(arr[:,col] == val),:]
+
 if __name__ == "__main__":
     tweets = load_tweets(TWEET_DATA)
     results = {}
-    print "finished with corp stats"
     tf, tdf = count_tokens(tweets)
-    # for j in xrange(2,5):
-    #kgram_freq, kgram_doc_freq = count_kmers(tweets,j)
-    j = 1
-    for i in xrange(3, 12):
+    j = 2
+    kgram_freq, kgram_doc_freq = count_kmers(tweets,j,2)
+    print "finished with corp stats"
+    for i in xrange(5, 5):
         token_map = generate_dictionary(tf, i)
-        #kgram_map = generate_dictionary(kgram_freq, i)
-        v = UnigramVectorizer(token_map)
-        c = NBClassifier(v.feature_size, LABELS, False)  
-        acc, tp, fp, fn, tn = kfold_validation(tweets, v, c, 4)
+        kgram_map = generate_dictionary(kgram_freq, i)
+        v = KGramUniGramVectorizer(token_map, kgram_map, j)
+        c = NBClassifier(v.feature_size, LABELS)  
+        acc, tp, fp, fn, tn = kfold_validation(to_dataset(tweets, v), c, 4)
         results[(j, i)] = print_stats(tp, fp, fn, tn)
 
     # plotable form
@@ -257,3 +264,4 @@ if __name__ == "__main__":
             print "%d, %d, %d, %f, %f, %f, %f, %f" % (l, j, i, r[0], r[1], r[2], r[3], r[4])
             chart.append( [l, j, i, r[0], r[1], r[2], r[3], r[4]] )
     chart = numpy.array(chart)
+
