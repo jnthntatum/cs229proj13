@@ -247,7 +247,7 @@ if __name__ == "__main__":
     j = 2
     kgram_freq, kgram_doc_freq = count_kmers(tweets,j,2)
     print "finished with corp stats"
-    for i in xrange(5, 5):
+    for i in xrange(5, 6):
         token_map = generate_dictionary(tf, i)
         kgram_map = generate_dictionary(kgram_freq, i)
         v = KGramUniGramVectorizer(token_map, kgram_map, j)
