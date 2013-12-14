@@ -10,7 +10,7 @@
 *.pdf
 *.dat
 *.tar.gz
-
+*.arff
 # Editor tmp files
 *.swp
 *.*~

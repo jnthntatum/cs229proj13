@@ -162,6 +162,14 @@ def unpack_labels( examples ):
     e = examples[:,1:]
     return l, e
 
+def repack_labels( labels, examples ):
+    n = examples.shape[0]
+    m = examples.shape[1]
+    result = numpy.zeros([n, m + 1])
+    result[:,0] = labels
+    result[:,1:] = examples
+    return result
+
 def pack_labels(tuples):
     m = len(tuples)
     n = tuples[0][1].size
@@ -234,8 +242,7 @@ def print_stats(tp, fp, fn, tn, verbose = True):
     re = {}
     for i in tp:   
         re[i] = stats_i(tp, fp, fn, tn, i, verbose)
-    return re
-        
+    return re        
 
 def select_by_col(arr, col, val):
     return arr[numpy.nonzero(arr[:,col] == val),:]
@@ -244,24 +251,30 @@ if __name__ == "__main__":
     tweets = load_tweets(TWEET_DATA)
     results = {}
     tf, tdf = count_tokens(tweets)
-    j = 2
-    kgram_freq, kgram_doc_freq = count_kmers(tweets,j,2)
+    # bigrams
+    kgram_freq, kgram_doc_freq = count_kmers(tweets,2,2)
     print "finished with corp stats"
-    for i in xrange(5, 6):
-        token_map = generate_dictionary(tf, i)
-        kgram_map = generate_dictionary(kgram_freq, i)
-        v = KGramUniGramVectorizer(token_map, kgram_map, j)
-        c = NBClassifier(v.feature_size, LABELS)  
-        acc, tp, fp, fn, tn = kfold_validation(to_dataset(tweets, v), c, 4)
-        results[(j, i)] = print_stats(tp, fp, fn, tn)
-
+    for i in xrange(2, 6):
+            token_map = generate_dictionary(tf, i)
+            kgram_map = generate_dictionary(kgram_freq, i)
+            v3 = KGramUniGramVectorizer(token_map, kgram_map, 2)
+            v1 = UnigramVectorizer(token_map) 
+            v2 = KGramVectorizer(token_map, kgram_map, 2)
+            models = [v1, v2, v3]  
+            for j, model in enumerate(models):
+                d = to_dataset(tweets, model)
+                c = NBClassifier(model.feature_size, LABELS)
+                acc, tp, fp, fn, tn = kfold_validation(d, c, 4)
+                results[(j, i)] = print_stats(tp, fp, fn, tn)
+            
     # plotable form
     chart = []
-    print "Label, k, thresh, acc, sens, spec, ppp, npp" 
+    header = "Label, type(u.b.u&b), thresh, acc, sens, spec, ppp, npp" 
     for l in LABELS:
         for j, i in results: 
             r = results[(j,i)][l]
             print "%d, %d, %d, %f, %f, %f, %f, %f" % (l, j, i, r[0], r[1], r[2], r[3], r[4])
             chart.append( [l, j, i, r[0], r[1], r[2], r[3], r[4]] )
     chart = numpy.array(chart)
+    numpy.savetxt("kfold_nb.csv", chart, delimiter=",",header=header) 
 

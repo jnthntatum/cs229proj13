@@ -144,34 +144,35 @@ class NBClassifier(Classifier):
             lls += self.class_priors.T
         return self.idx_to_label[numpy.argmax(lls)]
 
-class PCANBayes(NBClassifier):
-    def __init__(self, n, labels, k=200, use_priors=True):
-        super(PCANBayes, self).__init__(k, labels, use_priors)
+class PCA(object):
+    """
+    project features into k-dimensional space 
+    """
+    def __init__(self, k=200):
         self.basis = None
-    def train(self, training_set, labels):
+        self.k = k
+    
+    def train(self, training_set):
         m = training_set.shape[0]
         n = training_set.shape[1]
-        mus = training_set.sum(0) * 1 / m
-        print mus.shape
-        b = training - ones([m, 1]).dot(mus)
-        cov = b.T.dot(b)
-        z = numpy.diag(numpy.sqrt((m-1)/cov.diagonal()))
-        cov = z * cov * z
+        mus = numpy.mean(training_set, axis=0)
+        d = training_set - mus
+        cov = numpy.cov(d.T)
         evals, evecs = numpy.linalg.eigh(cov)
         self.mus = mus
         self.cov = cov
-        self.z = z
         self.evecs = evecs
         self.evals = evals
         self.basis = evecs[:,(-evals).argsort()[0: self.k]]
-        projection = b.dot(z).dot(self.basis)    
-        super(PCANBayes, self).train(projection, labels)
-    def project(data):
+        projection = d.dot(self.basis)    
+        return projection 
+    
+    def project(self, data):
         if self.basis is None: 
             raise ClassifierException("model not trained")
-        m = data.shape[0] 
-    def classify(self, example):
-        if self.basis is None: 
-            raise ClassifierException("model not trained")
-        ex = example.reshape([1, n]) 
+        m = data.shape[0]
+        b = (data - self.mus)
+        return b.dot(self.basis)
+
+
 # SVM HERE!!!
